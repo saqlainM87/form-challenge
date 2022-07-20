@@ -9,8 +9,13 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import styles from './formPage.module.css';
+import SecondStep from './components/secondStep';
 
-const steps = ['Basic information', 'Educational information', 'Create an ad'];
+const steps = [
+    'Basic information',
+    'Educational information',
+    'Profile picture',
+];
 
 const FormPage: NextPage = () => {
     const [activeStep, setActiveStep] = React.useState(0);
@@ -112,6 +117,7 @@ const FormPage: NextPage = () => {
                         <Grid container justifyContent="center">
                             <Grid item xs={8}>
                                 {activeStep === 0 && <FirstStep />}
+                                {activeStep === 1 && <SecondStep />}
                             </Grid>
                         </Grid>
 
