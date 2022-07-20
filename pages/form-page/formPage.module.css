@@ -1,0 +1,15 @@
+.formPageWrapper {
+    padding: 4rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.firstStepWrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.title {
+    margin: 2rem 0;
+}
