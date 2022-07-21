@@ -1,7 +1,6 @@
 import {
     Checkbox,
     FormControlLabel,
-    MenuItem,
     TextField,
     Typography,
 } from '@mui/material';

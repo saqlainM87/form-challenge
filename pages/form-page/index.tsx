@@ -1,4 +1,4 @@
-import { Container, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { NextPage } from 'next';
 import FirstStep from './components/firstStep';
 import * as React from 'react';
@@ -10,11 +10,14 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import styles from './formPage.module.css';
 import SecondStep from './components/secondStep';
+import ThirdStep from './components/thirdStep';
 
 const steps = [
     'Basic information',
     'Educational information',
     'Profile picture',
+    'Additional information',
+    'Confirm',
 ];
 
 const FormPage: NextPage = () => {
@@ -44,20 +47,20 @@ const FormPage: NextPage = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleSkip = () => {
-        if (!isStepOptional(activeStep)) {
-            // You probably want to guard against something like this,
-            // it should never occur unless someone's actively trying to break something.
-            throw new Error("You can't skip a step that isn't optional.");
-        }
+    // const handleSkip = () => {
+    //     if (!isStepOptional(activeStep)) {
+    //         // You probably want to guard against something like this,
+    //         // it should never occur unless someone's actively trying to break something.
+    //         throw new Error("You can't skip a step that isn't optional.");
+    //     }
 
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        setSkipped((prevSkipped) => {
-            const newSkipped = new Set(prevSkipped.values());
-            newSkipped.add(activeStep);
-            return newSkipped;
-        });
-    };
+    //     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    //     setSkipped((prevSkipped) => {
+    //         const newSkipped = new Set(prevSkipped.values());
+    //         newSkipped.add(activeStep);
+    //         return newSkipped;
+    //     });
+    // };
 
     const handleReset = () => {
         setActiveStep(0);
@@ -65,45 +68,69 @@ const FormPage: NextPage = () => {
 
     return (
         <Box className={styles.formPageWrapper} sx={{ width: '50%' }}>
-            <Stepper activeStep={activeStep}>
-                {steps.map((label, index) => {
-                    const stepProps: { completed?: boolean } = {};
-                    const labelProps: {
-                        optional?: React.ReactNode;
-                    } = {};
-                    if (isStepOptional(index)) {
-                        labelProps.optional = (
-                            <Typography variant="caption">Optional</Typography>
+            <div className={styles.form}>
+                <Stepper
+                    className={styles.stepper}
+                    activeStep={activeStep}
+                    alternativeLabel
+                >
+                    {steps.map((label, index) => {
+                        const stepProps: { completed?: boolean } = {};
+                        const labelProps: {
+                            optional?: React.ReactNode;
+                        } = {};
+                        if (isStepOptional(index)) {
+                            labelProps.optional = (
+                                <Typography variant="caption">
+                                    Optional
+                                </Typography>
+                            );
+                        }
+                        if (isStepSkipped(index)) {
+                            stepProps.completed = false;
+                        }
+                        return (
+                            <Step key={label} {...stepProps}>
+                                <StepLabel
+                                    className="text-center"
+                                    {...labelProps}
+                                >
+                                    {label}
+                                </StepLabel>
+                            </Step>
                         );
-                    }
-                    if (isStepSkipped(index)) {
-                        stepProps.completed = false;
-                    }
-                    return (
-                        <Step key={label} {...stepProps}>
-                            <StepLabel {...labelProps}>{label}</StepLabel>
-                        </Step>
-                    );
-                })}
-            </Stepper>
-            {activeStep === steps.length ? (
-                <React.Fragment>
-                    <Typography sx={{ mt: 2, mb: 1 }}>
-                        All steps completed - you&apos;re finished
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                        <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleReset}>Reset</Button>
-                    </Box>
-                </React.Fragment>
-            ) : (
-                <React.Fragment>
+                    })}
+                </Stepper>
+                {activeStep === steps.length ? (
                     <Box
                         sx={{
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'flex-end',
                         }}
+                    >
+                        <Typography sx={{ mt: 2, mb: 1 }}>
+                            All steps completed - you&apos;re finished
+                        </Typography>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                pt: 2,
+                            }}
+                        >
+                            <Box sx={{ flex: '1 1 auto' }} />
+                            <Button onClick={handleReset}>Reset</Button>
+                        </Box>
+                    </Box>
+                ) : (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'flex-end',
+                        }}
+                        padding="2rem"
                     >
                         <Button
                             disabled={activeStep === 0}
@@ -118,6 +145,7 @@ const FormPage: NextPage = () => {
                             <Grid item xs={8}>
                                 {activeStep === 0 && <FirstStep />}
                                 {activeStep === 1 && <SecondStep />}
+                                {activeStep === 2 && <ThirdStep />}
                             </Grid>
                         </Grid>
 
@@ -127,8 +155,8 @@ const FormPage: NextPage = () => {
                                 : 'Next'}
                         </Button>
                     </Box>
-                </React.Fragment>
-            )}
+                )}
+            </div>
         </Box>
     );
 };

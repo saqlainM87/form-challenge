@@ -11,5 +11,18 @@
 }
 
 .title {
-    margin: 2rem 0;
+    margin: 0 0 2rem 0;
+}
+
+.form {
+    border: 1px solid black;
+    border-radius: 8px;
+    background-color: #d4e6f7;
+}
+
+.stepper {
+    padding: 2rem;
+    background-color: #c2d6e6;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
