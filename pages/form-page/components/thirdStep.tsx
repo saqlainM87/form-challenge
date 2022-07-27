@@ -23,7 +23,7 @@ const ThirdStep = (): ReactElement => {
             <Box
                 marginTop="1rem"
                 sx={{
-                    '& .MuiTextField-root': { width: '15rem' },
+                    '& .MuiTextField-root': { width: '100%' },
                 }}
                 display="flex"
                 justifyContent={'space-around'}

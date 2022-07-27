@@ -22,7 +22,7 @@ const SecondStep = (): ReactElement => {
             <Box
                 marginTop="1rem"
                 sx={{
-                    '& .MuiTextField-root': { width: '15rem' },
+                    '& .MuiTextField-root': { width: '100%' },
                 }}
             >
                 <TextField
@@ -38,7 +38,7 @@ const SecondStep = (): ReactElement => {
             <Box
                 marginTop="1rem"
                 sx={{
-                    '& .MuiTextField-root': { width: '15rem' },
+                    '& .MuiTextField-root': { width: '100%' },
                 }}
             >
                 <DesktopDatePicker
@@ -56,7 +56,7 @@ const SecondStep = (): ReactElement => {
             <Box
                 marginTop="1rem"
                 sx={{
-                    '& .MuiTextField-root': { width: '15rem' },
+                    '& .MuiTextField-root': { width: '100%' },
                 }}
             >
                 <TextField
@@ -84,7 +84,7 @@ const SecondStep = (): ReactElement => {
             <Box
                 marginTop="1rem"
                 sx={{
-                    '& .MuiTextField-root': { width: '15rem' },
+                    '& .MuiTextField-root': { width: '100%' },
                 }}
                 textAlign="left"
             >
@@ -102,7 +102,7 @@ const SecondStep = (): ReactElement => {
             <Box
                 marginTop="1rem"
                 sx={{
-                    '& .MuiTextField-root': { width: '15rem' },
+                    '& .MuiTextField-root': { width: '100%' },
                 }}
                 textAlign="left"
             >
@@ -120,7 +120,7 @@ const SecondStep = (): ReactElement => {
             <Box
                 marginTop="1rem"
                 sx={{
-                    '& .MuiTextField-root': { width: '15rem' },
+                    '& .MuiTextField-root': { width: '100%' },
                 }}
                 textAlign="left"
             >

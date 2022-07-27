@@ -11,17 +11,18 @@ import Typography from '@mui/material/Typography';
 import styles from './formPage.module.css';
 import SecondStep from './components/secondStep';
 import ThirdStep from './components/thirdStep';
+import FourthStep from './components/fourthStep';
 
 const steps = [
     'Basic information',
     'Educational information',
     'Profile picture',
-    'Additional information',
+    'Contact information',
     'Confirm',
 ];
 
 const FormPage: NextPage = () => {
-    const [activeStep, setActiveStep] = React.useState(0);
+    const [activeStep, setActiveStep] = React.useState(3);
     const [skipped, setSkipped] = React.useState(new Set<number>());
 
     const isStepOptional = (step: number) => {
@@ -67,7 +68,7 @@ const FormPage: NextPage = () => {
     };
 
     return (
-        <Box className={styles.formPageWrapper} sx={{ width: '50%' }}>
+        <Box className={styles.formPageWrapper} sx={{ width: '60%' }}>
             <div className={styles.form}>
                 <Stepper
                     className={styles.stepper}
@@ -79,6 +80,7 @@ const FormPage: NextPage = () => {
                         const labelProps: {
                             optional?: React.ReactNode;
                         } = {};
+
                         if (isStepOptional(index)) {
                             labelProps.optional = (
                                 <Typography variant="caption">
@@ -86,9 +88,19 @@ const FormPage: NextPage = () => {
                                 </Typography>
                             );
                         }
+
+                        if (index === 3) {
+                            labelProps.optional = (
+                                <Typography variant="caption">
+                                    At least one
+                                </Typography>
+                            );
+                        }
+
                         if (isStepSkipped(index)) {
                             stepProps.completed = false;
                         }
+
                         return (
                             <Step key={label} {...stepProps}>
                                 <StepLabel
@@ -107,6 +119,7 @@ const FormPage: NextPage = () => {
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'flex-end',
+                            justifyContent: 'center',
                         }}
                     >
                         <Typography sx={{ mt: 2, mb: 1 }}>
@@ -146,6 +159,7 @@ const FormPage: NextPage = () => {
                                 {activeStep === 0 && <FirstStep />}
                                 {activeStep === 1 && <SecondStep />}
                                 {activeStep === 2 && <ThirdStep />}
+                                {activeStep === 3 && <FourthStep />}
                             </Grid>
                         </Grid>
 
