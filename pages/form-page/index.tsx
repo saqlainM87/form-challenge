@@ -12,6 +12,7 @@ import styles from './formPage.module.css';
 import SecondStep from './components/secondStep';
 import ThirdStep from './components/thirdStep';
 import FourthStep from './components/fourthStep';
+import { SubmitHandler } from 'react-hook-form';
 
 const steps = [
     'Basic information',
@@ -22,8 +23,10 @@ const steps = [
 ];
 
 const FormPage: NextPage = () => {
-    const [activeStep, setActiveStep] = React.useState(3);
+    const [activeStep, setActiveStep] = React.useState(0);
     const [skipped, setSkipped] = React.useState(new Set<number>());
+    const [submitCurrentStep, setSubmitCurrentStep] =
+        React.useState<() => Promise<Boolean>>(); // State for storing form step submitter
 
     const isStepOptional = (step: number) => {
         return step === 1;
@@ -33,7 +36,15 @@ const FormPage: NextPage = () => {
         return skipped.has(step);
     };
 
-    const handleNext = () => {
+    const onSubmit: SubmitHandler<any> = (data) => console.log(data);
+
+    const handleNext = async () => {
+        const success = await submitCurrentStep?.();
+
+        if (submitCurrentStep && !success) {
+            return;
+        }
+
         let newSkipped = skipped;
         if (isStepSkipped(activeStep)) {
             newSkipped = new Set(newSkipped.values());
@@ -47,21 +58,6 @@ const FormPage: NextPage = () => {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-
-    // const handleSkip = () => {
-    //     if (!isStepOptional(activeStep)) {
-    //         // You probably want to guard against something like this,
-    //         // it should never occur unless someone's actively trying to break something.
-    //         throw new Error("You can't skip a step that isn't optional.");
-    //     }
-
-    //     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    //     setSkipped((prevSkipped) => {
-    //         const newSkipped = new Set(prevSkipped.values());
-    //         newSkipped.add(activeStep);
-    //         return newSkipped;
-    //     });
-    // };
 
     const handleReset = () => {
         setActiveStep(0);
@@ -156,7 +152,13 @@ const FormPage: NextPage = () => {
 
                         <Grid container justifyContent="center">
                             <Grid item xs={8}>
-                                {activeStep === 0 && <FirstStep />}
+                                {activeStep === 0 && (
+                                    <FirstStep
+                                        setSubmitCurrentStep={
+                                            setSubmitCurrentStep
+                                        }
+                                    />
+                                )}
                                 {activeStep === 1 && <SecondStep />}
                                 {activeStep === 2 && <ThirdStep />}
                                 {activeStep === 3 && <FourthStep />}

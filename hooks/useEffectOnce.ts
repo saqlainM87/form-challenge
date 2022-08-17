@@ -1,6 +1,6 @@
-import { EffectCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-const useEffectOnce = (callback: EffectCallback) => {
+const useEffectOnce = (callback: any) => {
     const effectDone = useRef<boolean>(false);
 
     useEffect(() => {
