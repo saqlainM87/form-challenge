@@ -181,7 +181,13 @@ const FormPage: NextPage = () => {
                                         }
                                     />
                                 )}
-                                {activeStep === 2 && <ThirdStep />}
+                                {activeStep === 2 && (
+                                    <ThirdStep
+                                        setSubmitCurrentStep={
+                                            setSubmitCurrentStep
+                                        }
+                                    />
+                                )}
                                 {activeStep === 3 && <FourthStep />}
                             </Grid>
                         </Grid>

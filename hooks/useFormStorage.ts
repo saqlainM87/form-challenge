@@ -7,6 +7,7 @@ const useFormStorage = <T = any>(
     storageKey: string,
     schema: any,
     setSubmitCurrentStep?: React.Dispatch<any>,
+    callbackHandler?: (data: T) => void,
     formOptions?: any
 ) => {
     const [localStorageValue, setLocalStorageValue] = useLocalStorage<any>(
@@ -30,6 +31,10 @@ const useFormStorage = <T = any>(
     });
 
     const onSubmit: SubmitHandler<T> = (data) => {
+        if (callbackHandler) {
+            return callbackHandler(data);
+        }
+
         setLocalStorageValue(data);
     };
 
@@ -60,6 +65,7 @@ const useFormStorage = <T = any>(
         errors,
         getValues,
         storageValue: localStorageValue,
+        setLocalStorageValue,
         reset,
         watch,
         setValue,
