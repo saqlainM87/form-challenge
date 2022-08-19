@@ -1,18 +1,20 @@
 import { Grid } from '@mui/material';
 import { NextPage } from 'next';
 import FirstStep from './components/firstStep';
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { useLocalStorage } from 'react-use';
+import { useEffect, useState } from 'react';
+
+import useEffectOnce from '../../hooks/useEffectOnce';
 import styles from './formPage.module.css';
 import SecondStep from './components/secondStep';
 import ThirdStep from './components/thirdStep';
 import FourthStep from './components/fourthStep';
-import { SubmitHandler } from 'react-hook-form';
 
 const steps = [
     'Basic information',
@@ -23,10 +25,25 @@ const steps = [
 ];
 
 const FormPage: NextPage = () => {
-    const [activeStep, setActiveStep] = React.useState(0);
-    const [skipped, setSkipped] = React.useState(new Set<number>());
+    const [savedActiveStep, setSavedActiveStep] = useLocalStorage(
+        'activeStep',
+        0
+    );
+    const [activeStep, setActiveStep] = useState(0);
+    const [skipped, setSkipped] = useState(new Set<number>());
     const [submitCurrentStep, setSubmitCurrentStep] =
-        React.useState<() => Promise<Boolean>>(); // State for storing form step submitter
+        useState<() => Promise<Boolean>>(); // State for storing form step submitter
+
+    useEffectOnce(() => {
+        if (savedActiveStep) {
+            setActiveStep(savedActiveStep);
+        }
+    });
+
+    useEffect(() => {
+        setSavedActiveStep(activeStep);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeStep]);
 
     const isStepOptional = (step: number) => {
         return step === 1;
@@ -35,8 +52,6 @@ const FormPage: NextPage = () => {
     const isStepSkipped = (step: number) => {
         return skipped.has(step);
     };
-
-    const onSubmit: SubmitHandler<any> = (data) => console.log(data);
 
     const handleNext = async () => {
         const success = await submitCurrentStep?.();
@@ -74,7 +89,7 @@ const FormPage: NextPage = () => {
                     {steps.map((label, index) => {
                         const stepProps: { completed?: boolean } = {};
                         const labelProps: {
-                            optional?: React.ReactNode;
+                            optional?: ReactNode;
                         } = {};
 
                         if (isStepOptional(index)) {
@@ -159,7 +174,13 @@ const FormPage: NextPage = () => {
                                         }
                                     />
                                 )}
-                                {activeStep === 1 && <SecondStep />}
+                                {activeStep === 1 && (
+                                    <SecondStep
+                                        setSubmitCurrentStep={
+                                            setSubmitCurrentStep
+                                        }
+                                    />
+                                )}
                                 {activeStep === 2 && <ThirdStep />}
                                 {activeStep === 3 && <FourthStep />}
                             </Grid>

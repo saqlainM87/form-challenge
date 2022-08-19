@@ -4,20 +4,158 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import cx from 'classnames';
 import { Box } from '@mui/system';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
+import * as yup from 'yup';
 
 import styles from '../formPage.module.css';
+import useFormStorage from '../../../hooks/useFormStorage';
+import { Controller } from 'react-hook-form';
+import useEffectOnce from '../../../hooks/useEffectOnce';
 import dayjs from 'dayjs';
 
-const SecondStep = (): ReactElement => {
-    const [schoolSelected, setSchoolSelected] = useState(false);
-    const [collegeSelected, setCollegeSelected] = useState(false);
-    const [universitySelected, setUniversitySelected] = useState(false);
+interface SecondStepProps {
+    setSubmitCurrentStep?: React.Dispatch<any>;
+}
 
-    const renderInputs = () => (
+type InstituteInputDef = {
+    institutionName: string;
+    passingYear: string;
+    result: string;
+};
+
+interface FormInputDef {
+    schoolSelected: boolean;
+    collegeSelected: boolean;
+    universitySelected: boolean;
+    school: InstituteInputDef;
+    college: InstituteInputDef;
+    university: InstituteInputDef;
+}
+
+const childSchema = {
+    institutionName: yup
+        .string()
+        .required('This field is required!')
+        .max(50, 'Can not exceed 50 characters'),
+    result: yup
+        .number()
+        .transform((value, originalValue) => {
+            if (originalValue === '') {
+                return null;
+            }
+
+            return value;
+        })
+        .required('This field is required!')
+        .typeError('Please enter a valid number')
+        .nullable()
+        .test('result', 'Result can not exceed 5.00', (value) => {
+            return Number(value) <= 5;
+        }),
+    passingYear: yup
+        .string()
+        .nullable()
+        .required('This field is required!')
+        .test('passingYear', 'Enter a valid date', (value) => {
+            return !dayjs(value).isAfter(dayjs());
+        }),
+};
+
+const schema = yup
+    .object({
+        schoolSelected: yup.boolean().required(),
+        collegeSelected: yup.boolean().required(),
+        universitySelected: yup.boolean().required(),
+        school: yup.object().when('schoolSelected', {
+            is: true,
+            then: yup.object(childSchema),
+        }),
+        college: yup.object().when('collegeSelected', {
+            is: true,
+            then: yup.object(childSchema),
+        }),
+        university: yup.object().when('universitySelected', {
+            is: true,
+            then: yup.object(childSchema),
+        }),
+    })
+    .required();
+
+const SecondStep = ({
+    setSubmitCurrentStep,
+}: SecondStepProps): ReactElement<SecondStepProps> => {
+    const {
+        register,
+        control,
+        errors,
+        storageValue,
+        watch,
+        reset,
+        getValues,
+        setValue,
+    } = useFormStorage<FormInputDef>(
+        'secondForm',
+        schema,
+        setSubmitCurrentStep
+    );
+
+    watch(['schoolSelected', 'collegeSelected', 'universitySelected']); // when pass nothing as argument, you are watching everything
+    const { schoolSelected, collegeSelected, universitySelected } = getValues();
+
+    const parseSelections = () => {
+        if (storageValue) {
+            const parsedValue = storageValue;
+            const keys = Object.keys(parsedValue);
+
+            keys.forEach((key) => {
+                if (key === 'school') {
+                    setValue('schoolSelected', true);
+                }
+
+                if (key === 'college') {
+                    setValue('collegeSelected', true);
+                }
+
+                if (key === 'university') {
+                    setValue('universitySelected', true);
+                }
+            });
+        }
+    };
+
+    // Remove unnecessary form
+    useEffect(() => {
+        const existingValue = getValues();
+
+        if (schoolSelected === false) {
+            delete existingValue.school;
+        }
+
+        if (collegeSelected === false) {
+            delete existingValue.college;
+        }
+
+        if (universitySelected === false) {
+            delete existingValue.university;
+        }
+
+        reset(existingValue, { keepErrors: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [schoolSelected, collegeSelected, universitySelected]);
+
+    useEffectOnce(() => {
+        parseSelections();
+    });
+
+    const getErrorProps = (name: keyof FormInputDef, key: string) => ({
+        error: Boolean(errors?.[name]?.[key]),
+        helperText: String(errors?.[name]?.[key]?.message || ''),
+    });
+
+    const renderInputs = (name: keyof FormInputDef) => (
         <>
             <Box
                 marginTop="1rem"
@@ -33,6 +171,8 @@ const SecondStep = (): ReactElement => {
                     InputLabelProps={{
                         shrink: true,
                     }}
+                    {...register(`${name}.institutionName`)}
+                    {...getErrorProps(name, 'institutionName')}
                 />
             </Box>
             <Box
@@ -41,16 +181,27 @@ const SecondStep = (): ReactElement => {
                     '& .MuiTextField-root': { width: '100%' },
                 }}
             >
-                <DesktopDatePicker
-                    disableFuture
-                    value={dayjs()}
-                    onChange={() => {
-                        //
-                    }}
-                    label="Passing Year"
-                    inputFormat="YYYY"
-                    renderInput={(params) => <TextField {...params} />}
-                    views={['year']}
+                <Controller
+                    name={`${name}.passingYear`}
+                    control={control}
+                    rules={{ required: true }}
+                    defaultValue={null}
+                    render={({ field }: any) => (
+                        <DesktopDatePicker
+                            disableFuture
+                            label="Passing Year"
+                            inputFormat="YYYY"
+                            renderInput={(params) => (
+                                <TextField
+                                    required
+                                    {...params}
+                                    {...getErrorProps(name, 'passingYear')}
+                                />
+                            )}
+                            views={['year']}
+                            {...field}
+                        />
+                    )}
                 />
             </Box>
             <Box
@@ -67,6 +218,8 @@ const SecondStep = (): ReactElement => {
                     InputLabelProps={{
                         shrink: true,
                     }}
+                    {...register(`${name}.result`)}
+                    {...getErrorProps(name, 'result')}
                 />
             </Box>
         </>
@@ -89,15 +242,12 @@ const SecondStep = (): ReactElement => {
                 textAlign="left"
             >
                 <FormControlLabel
-                    onChange={() => {
-                        setSchoolSelected((state) => !state);
-                    }}
-                    value={schoolSelected}
-                    control={<Checkbox />}
+                    checked={Boolean(schoolSelected)}
+                    control={<Checkbox {...register('schoolSelected')} />}
                     label="School"
                 />
             </Box>
-            {schoolSelected && renderInputs()}
+            {schoolSelected && renderInputs('school')}
 
             <Box
                 marginTop="1rem"
@@ -107,15 +257,12 @@ const SecondStep = (): ReactElement => {
                 textAlign="left"
             >
                 <FormControlLabel
-                    onChange={() => {
-                        setCollegeSelected((state) => !state);
-                    }}
-                    value={collegeSelected}
-                    control={<Checkbox />}
+                    checked={Boolean(collegeSelected)}
+                    control={<Checkbox {...register('collegeSelected')} />}
                     label="College"
                 />
             </Box>
-            {collegeSelected && renderInputs()}
+            {collegeSelected && renderInputs('college')}
 
             <Box
                 marginTop="1rem"
@@ -125,15 +272,12 @@ const SecondStep = (): ReactElement => {
                 textAlign="left"
             >
                 <FormControlLabel
-                    onChange={() => {
-                        setUniversitySelected((state) => !state);
-                    }}
-                    value={universitySelected}
-                    control={<Checkbox />}
+                    checked={Boolean(universitySelected)}
+                    control={<Checkbox {...register('universitySelected')} />}
                     label="University"
                 />
             </Box>
-            {universitySelected && renderInputs()}
+            {universitySelected && renderInputs('university')}
         </div>
     );
 };
