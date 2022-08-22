@@ -7,7 +7,7 @@ const useFormStorage = <T = any>(
     storageKey: string,
     schema: any,
     setSubmitCurrentStep?: React.Dispatch<any>,
-    callbackHandler?: (data: T) => void,
+    submitHandler?: (data: T) => void, // To override default submit handler
     formOptions?: any
 ) => {
     const [localStorageValue, setLocalStorageValue] = useLocalStorage<any>(
@@ -24,6 +24,7 @@ const useFormStorage = <T = any>(
         watch,
         setValue,
         unregister,
+        clearErrors,
     } = useForm<T>({
         resolver: yupResolver(schema),
         reValidateMode: 'onSubmit',
@@ -31,8 +32,8 @@ const useFormStorage = <T = any>(
     });
 
     const onSubmit: SubmitHandler<T> = (data) => {
-        if (callbackHandler) {
-            return callbackHandler(data);
+        if (submitHandler) {
+            return submitHandler(data);
         }
 
         setLocalStorageValue(data);
@@ -53,7 +54,7 @@ const useFormStorage = <T = any>(
     useEffectOnce(() => {
         reset(localStorageValue ? localStorageValue : {}); // Set initial form values here to prevent hydration issue
         setSubmitCurrentStep?.(
-            // Return as callback function
+            // Return submit handler as callback function
             () => submit
         );
     });
@@ -70,6 +71,7 @@ const useFormStorage = <T = any>(
         watch,
         setValue,
         unregister,
+        clearErrors,
     };
 };
 

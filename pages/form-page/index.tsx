@@ -17,10 +17,10 @@ import ThirdStep from './components/thirdStep';
 import FourthStep from './components/fourthStep';
 
 const steps = [
-    'Basic information',
-    'Educational information',
-    'Profile picture',
-    'Contact information',
+    'Basic Information',
+    'Educational Information',
+    'Profile Picture',
+    'Location Information',
     'Confirm',
 ];
 
@@ -188,7 +188,13 @@ const FormPage: NextPage = () => {
                                         }
                                     />
                                 )}
-                                {activeStep === 3 && <FourthStep />}
+                                {activeStep === 3 && (
+                                    <FourthStep
+                                        setSubmitCurrentStep={
+                                            setSubmitCurrentStep
+                                        }
+                                    />
+                                )}
                             </Grid>
                         </Grid>
 

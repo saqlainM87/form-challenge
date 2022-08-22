@@ -30,9 +30,9 @@ interface FormInputDef {
     schoolSelected: boolean;
     collegeSelected: boolean;
     universitySelected: boolean;
-    school: InstituteInputDef;
-    college: InstituteInputDef;
-    university: InstituteInputDef;
+    school?: InstituteInputDef;
+    college?: InstituteInputDef;
+    university?: InstituteInputDef;
 }
 
 const childSchema = {
@@ -59,16 +59,19 @@ const childSchema = {
         .string()
         .nullable()
         .required('This field is required!')
-        .test('passingYear', 'Enter a valid date', (value) => {
+        .test('validateDate', 'Must be a valid date', (value) => {
+            return dayjs(value).isValid();
+        })
+        .test('notFuture', 'Date can not be in future!', (value) => {
             return !dayjs(value).isAfter(dayjs());
         }),
 };
 
 const schema = yup
     .object({
-        schoolSelected: yup.boolean().required(),
-        collegeSelected: yup.boolean().required(),
-        universitySelected: yup.boolean().required(),
+        schoolSelected: yup.boolean(),
+        collegeSelected: yup.boolean(),
+        universitySelected: yup.boolean(),
         school: yup.object().when('schoolSelected', {
             is: true,
             then: yup.object(childSchema),
@@ -150,12 +153,23 @@ const SecondStep = ({
         parseSelections();
     });
 
-    const getErrorProps = (name: keyof FormInputDef, key: string) => ({
+    const getErrorProps = (
+        name: keyof Omit<
+            FormInputDef,
+            'schoolSelected' | 'collegeSelected' | 'universitySelected'
+        >,
+        key: keyof InstituteInputDef
+    ) => ({
         error: Boolean(errors?.[name]?.[key]),
         helperText: String(errors?.[name]?.[key]?.message || ''),
     });
 
-    const renderInputs = (name: keyof FormInputDef) => (
+    const renderInputs = (
+        name: keyof Omit<
+            FormInputDef,
+            'schoolSelected' | 'collegeSelected' | 'universitySelected'
+        >
+    ) => (
         <>
             <Box
                 marginTop="1rem"
@@ -185,7 +199,7 @@ const SecondStep = ({
                     name={`${name}.passingYear`}
                     control={control}
                     rules={{ required: true }}
-                    defaultValue={null}
+                    defaultValue=""
                     render={({ field }: any) => (
                         <DesktopDatePicker
                             disableFuture
@@ -193,6 +207,7 @@ const SecondStep = ({
                             inputFormat="YYYY"
                             renderInput={(params) => (
                                 <TextField
+                                    onKeyDown={(e) => e.preventDefault()}
                                     required
                                     {...params}
                                     {...getErrorProps(name, 'passingYear')}

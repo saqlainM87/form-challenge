@@ -43,10 +43,10 @@ const schema = yup
             .string()
             .nullable()
             .required('This field is required!')
-            .test('DOB', 'Must be a valid date', (value) => {
+            .test('validDate', 'Must be a valid date', (value) => {
                 return dayjs(value).isValid();
             })
-            .test('DOB', 'Must be at least 18 years old', (value) => {
+            .test('mustBe18', 'Must be at least 18 years old', (value) => {
                 return dayjs().diff(dayjs(value), 'years') >= 18;
             }),
     })
@@ -122,7 +122,7 @@ const FirstStep = ({
                     name="gender"
                     control={control}
                     rules={{ required: true }}
-                    defaultValue={null}
+                    defaultValue=""
                     render={({ field }: any) => (
                         <TextField
                             required
@@ -158,6 +158,9 @@ const FirstStep = ({
                             inputFormat="MM/DD/YYYY"
                             renderInput={(params) => (
                                 <TextField
+                                    onKeyDown={(e) => {
+                                        e.preventDefault();
+                                    }}
                                     required
                                     {...params}
                                     {...getErrorProps('dob')}
