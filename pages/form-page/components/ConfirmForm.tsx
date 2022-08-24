@@ -1,60 +1,12 @@
-import { Avatar, MenuItem, TextField, Typography } from '@mui/material';
+import { Avatar, TextField, Typography } from '@mui/material';
 import React, { ReactElement } from 'react';
 import cx from 'classnames';
 import { Box } from '@mui/system';
-import { DesktopDatePicker } from '@mui/x-date-pickers';
-import * as yup from 'yup';
-import dayjs, { Dayjs } from 'dayjs';
-import { Controller } from 'react-hook-form';
+import dayjs from 'dayjs';
 
 import styles from '../formPage.module.css';
-import useFormStorage from '../../../hooks/useFormStorage';
 
-enum GenderEnum {
-    FEMALE = 'female',
-    MALE = 'male',
-}
-
-interface FormInputDef {
-    firstName: String;
-    lastName: string;
-    gender: string | null;
-    dob: Dayjs | null;
-}
-
-interface FirstStepProps {
-    setSubmitCurrentStep?: React.Dispatch<any>;
-}
-
-const schema = yup
-    .object({
-        firstName: yup
-            .string()
-            .required('This field is required!')
-            .matches(/^[A-Za-z \.]*$/, 'Please enter a valid name')
-            .max(20, 'Can not exceed 20 characters'),
-        lastName: yup
-            .string()
-            .required('This field is required!')
-            .matches(/^[A-Za-z \.]*$/, 'Please enter a valid name')
-            .max(20, 'Can not exceed 20 characters'),
-        gender: yup.string().nullable().required('This field is required!'),
-        dob: yup
-            .string()
-            .nullable()
-            .required('This field is required!')
-            .test('validDate', 'Must be a valid date', (value) => {
-                return dayjs(value).isValid();
-            })
-            .test('mustBe18', 'Must be at least 18 years old', (value) => {
-                return dayjs().diff(dayjs(value), 'years') >= 18;
-            }),
-    })
-    .required();
-
-const ConfirmForm = ({
-    setSubmitCurrentStep,
-}: FirstStepProps): ReactElement<FirstStepProps> => {
+const ConfirmForm = (): ReactElement => {
     const firstFormValues = JSON.parse(localStorage.getItem('firstForm') ?? '');
     const secondFormValues = JSON.parse(
         localStorage.getItem('secondForm') ?? ''
