@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
 import { NextPage } from 'next';
-import FirstStep from './components/firstStep';
+import FirstStep from './components/FirstStep';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -12,9 +12,10 @@ import { useEffect, useState } from 'react';
 
 import useEffectOnce from '../../hooks/useEffectOnce';
 import styles from './formPage.module.css';
-import SecondStep from './components/secondStep';
-import ThirdStep from './components/thirdStep';
-import FourthStep from './components/fourthStep';
+import SecondStep from './components/SecondStep';
+import ThirdStep from './components/ThirdStep';
+import FourthStep from './components/FourthStep';
+import ConfirmForm from './components/ConfirmForm';
 
 const steps = [
     'Basic Information',
@@ -75,6 +76,7 @@ const FormPage: NextPage = () => {
     };
 
     const handleReset = () => {
+        localStorage.clear();
         setActiveStep(0);
     };
 
@@ -131,20 +133,26 @@ const FormPage: NextPage = () => {
                             flexDirection: 'row',
                             alignItems: 'flex-end',
                             justifyContent: 'center',
+                            padding: '1rem 0',
                         }}
                     >
-                        <Typography sx={{ mt: 2, mb: 1 }}>
+                        <Typography>
                             All steps completed - you&apos;re finished
                         </Typography>
                         <Box
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'row',
-                                pt: 2,
                             }}
                         >
-                            <Box sx={{ flex: '1 1 auto' }} />
-                            <Button onClick={handleReset}>Reset</Button>
+                            <Button
+                                sx={{
+                                    padding: 0,
+                                }}
+                                onClick={handleReset}
+                            >
+                                Reset
+                            </Button>
                         </Box>
                     </Box>
                 ) : (
@@ -195,6 +203,7 @@ const FormPage: NextPage = () => {
                                         }
                                     />
                                 )}
+                                {activeStep === 4 && <ConfirmForm />}
                             </Grid>
                         </Grid>
 
