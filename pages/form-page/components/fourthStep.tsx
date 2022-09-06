@@ -31,23 +31,25 @@ interface FourthStepProps {
     setSubmitCurrentStep?: React.Dispatch<any>;
 }
 
-const schema = yup.object({
-    locationCount: yup
-        .number()
-        .min(1, 'Please enter at least one location info'),
-    locations: yup.array().of(
-        yup.object({
-            address: yup
-                .string()
-                .required('This field is required!')
-                .max(30, 'Input can not exceed 30 characters!'),
-            postCode: yup
-                .string()
-                .required('This field is required!')
-                .matches(/^\d{4}$/, 'Please enter a valid post code'), // Post code for bd only
-        })
-    ),
-});
+const schema = yup
+    .object({
+        locationCount: yup
+            .number()
+            .min(1, 'Please enter at least one location info'),
+        locations: yup.array().of(
+            yup.object({
+                address: yup
+                    .string()
+                    .required('This field is required!')
+                    .max(30, 'Input can not exceed 30 characters!'),
+                postCode: yup
+                    .string()
+                    .required('This field is required!')
+                    .matches(/^\d{4}$/, 'Please enter a valid post code'), // Post code for bd only
+            })
+        ),
+    })
+    .required();
 
 const FourthStep = ({
     setSubmitCurrentStep,

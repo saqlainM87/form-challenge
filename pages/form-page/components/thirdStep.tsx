@@ -17,23 +17,25 @@ interface FormInputDef {
     profilePicture: File[];
 }
 
-const schema = yup.object({
-    profilePicture: yup
-        .mixed()
-        .test('required', 'This field is required!', (value) => {
-            return value && value.length;
-        })
-        .test(
-            'fileSize',
-            'The file size can not exceed 2 mb!',
-            (value, context) => {
-                return value && value[0] && value[0].size <= 2000000; // 2mb
-            }
-        )
-        .test('type', 'File should be of type image!', function (value) {
-            return value && value[0] && value[0]?.type?.includes('image/');
-        }),
-});
+const schema = yup
+    .object({
+        profilePicture: yup
+            .mixed()
+            .test('required', 'This field is required!', (value) => {
+                return value && value.length;
+            })
+            .test(
+                'fileSize',
+                'The file size can not exceed 2 mb!',
+                (value, context) => {
+                    return value && value[0] && value[0].size <= 2000000; // 2mb
+                }
+            )
+            .test('type', 'File should be of type image!', function (value) {
+                return value && value[0] && value[0]?.type?.includes('image/');
+            }),
+    })
+    .required();
 
 const ThirdStep = ({
     setSubmitCurrentStep,
@@ -61,7 +63,6 @@ const ThirdStep = ({
         register,
         errors,
         watch,
-        getValues,
         setLocalStorageValue,
         storageValue,
         reset,
@@ -72,8 +73,7 @@ const ThirdStep = ({
         handleSubmit
     );
 
-    watch();
-    const { profilePicture } = getValues();
+    const { profilePicture } = watch();
 
     const uploadedFile = profilePicture?.[0];
 
@@ -102,7 +102,11 @@ const ThirdStep = ({
             </Typography>
 
             {uploadedFile && (
-                <Box>
+                <Box
+                    sx={{
+                        overflowWrap: 'break-word',
+                    }}
+                >
                     <span>
                         {uploadedFile.name} ({uploadedFile?.size / 1000} kb)
                     </span>

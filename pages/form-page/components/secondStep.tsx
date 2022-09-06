@@ -105,8 +105,11 @@ const SecondStep = ({
         setSubmitCurrentStep
     );
 
-    watch(['schoolSelected', 'collegeSelected', 'universitySelected']); // when pass nothing as argument, you are watching everything
-    const { schoolSelected, collegeSelected, universitySelected } = getValues();
+    const [schoolSelected, collegeSelected, universitySelected] = watch([
+        'schoolSelected',
+        'collegeSelected',
+        'universitySelected',
+    ]); // when pass nothing as argument, you are watching everything
 
     const parseSelections = () => {
         if (storageValue) {
